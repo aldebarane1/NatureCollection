@@ -1,0 +1,134 @@
+<html>
+<head>
+<title>AddPlantFragment.kt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #808080;}
+.s3 { color: #6a8759;}
+.s4 { color: #6897bb;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+AddPlantFragment.kt</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">fr.adlan.naturecollection.fragments</span>
+
+<span class="s1">import android.app.Activity</span>
+<span class="s1">import android.content.ContentValues.TAG</span>
+<span class="s1">import android.content.Intent</span>
+<span class="s1">import android.net.Uri</span>
+<span class="s1">import android.os.Bundle</span>
+<span class="s1">import android.util.Log</span>
+<span class="s1">import android.view.LayoutInflater</span>
+<span class="s1">import android.view.View</span>
+<span class="s1">import android.view.ViewGroup</span>
+<span class="s1">import android.widget.Button</span>
+<span class="s1">import android.widget.EditText</span>
+<span class="s1">import android.widget.ImageView</span>
+<span class="s1">import android.widget.Spinner</span>
+<span class="s1">import androidx.fragment.app.Fragment</span>
+<span class="s1">import fr.adlan.naturecollection.MainActivity</span>
+<span class="s1">import fr.adlan.naturecollection.PlantModel</span>
+<span class="s1">import fr.adlan.naturecollection.PlantRepository</span>
+<span class="s1">import fr.adlan.naturecollection.PlantRepository.Singleton.downloadUri</span>
+<span class="s1">import fr.adlan.naturecollection.R</span>
+<span class="s1">import java.util.*</span>
+
+<span class="s0">class </span><span class="s1">AddPlantFragment(</span>
+    <span class="s1">private </span><span class="s0">val </span><span class="s1">context: MainActivity</span>
+<span class="s1">) : Fragment() {</span>
+    <span class="s1">private </span><span class="s0">var </span><span class="s1">file: Uri? = </span><span class="s0">null</span>
+    <span class="s1">private </span><span class="s0">var </span><span class="s1">uploadedImage: ImageView? = </span><span class="s0">null</span>
+    <span class="s1">override </span><span class="s0">fun </span><span class="s1">onCreateView(</span>
+        <span class="s1">inflater: LayoutInflater</span><span class="s0">,</span>
+        <span class="s1">container: ViewGroup?</span><span class="s0">,</span>
+        <span class="s1">savedInstanceState: Bundle?</span>
+    <span class="s1">): View? {</span>
+        <span class="s0">val </span><span class="s1">view = inflater.inflate(R.layout.fragment_add_plant</span><span class="s0">, </span><span class="s1">container</span><span class="s0">, false</span><span class="s1">)</span>
+
+        <span class="s2">// recuperer image pour lui associer son composant</span>
+        <span class="s1">uploadedImage = view.findViewById(R.id.preview_image)</span>
+
+        <span class="s2">// recuperer bouton charger image</span>
+        <span class="s0">val </span><span class="s1">pickupImageButton = view.findViewById&lt;Button&gt;(R.id.uppload_button)</span>
+
+        <span class="s2">// au clic on ouvre les images du telephone</span>
+        <span class="s1">pickupImageButton.setOnClickListener { pickupImage() }</span>
+
+        <span class="s2">// recuperer bouton confirmer</span>
+        <span class="s0">val </span><span class="s1">confirmButton = view.findViewById&lt;Button&gt;(R.id.confirm_button)</span>
+        <span class="s1">confirmButton.setOnClickListener { sendForm(view) }</span>
+        <span class="s1">Log.d(TAG</span><span class="s0">, </span><span class="s3">&quot;onCreateView: FORMULAIRE&quot;</span><span class="s1">)</span>
+        <span class="s0">return </span><span class="s1">view</span>
+    <span class="s1">}</span>
+
+    <span class="s1">private </span><span class="s0">fun </span><span class="s1">sendForm(view: View) {</span>
+        <span class="s0">val </span><span class="s1">repo = PlantRepository()</span>
+        <span class="s1">repo.uploadImage(file!!) {</span>
+            <span class="s0">val </span><span class="s1">plantName = view.findViewById&lt;EditText&gt;(R.id.name_input).text.toString()</span>
+            <span class="s0">val </span><span class="s1">plantDescription =</span>
+                <span class="s1">view.findViewById&lt;EditText&gt;(R.id.description_input).text.toString()</span>
+            <span class="s0">val </span><span class="s1">grow = view.findViewById&lt;Spinner&gt;(R.id.grow_spinner).selectedItem.toString()</span>
+            <span class="s0">val </span><span class="s1">water = view.findViewById&lt;Spinner&gt;(R.id.water_spinner).selectedItem.toString()</span>
+            <span class="s0">val </span><span class="s1">downloadImageUrl = downloadUri</span>
+            <span class="s2">// LOG TEST</span>
+            <span class="s1">Log.d(</span><span class="s3">&quot;lol&quot;</span><span class="s0">, </span><span class="s3">&quot;sendForm: name&quot; </span><span class="s1">+ plantName)</span>
+            <span class="s1">Log.d(</span><span class="s3">&quot;lol&quot;</span><span class="s0">, </span><span class="s3">&quot;sendForm: name&quot; </span><span class="s1">+ grow)</span>
+
+            <span class="s2">// creer un nouvel objet PlantModel</span>
+            <span class="s0">val </span><span class="s1">plant = PlantModel(</span>
+                <span class="s1">UUID.randomUUID().toString()</span><span class="s0">,</span>
+                <span class="s1">plantName</span><span class="s0">,</span>
+                <span class="s1">plantDescription</span><span class="s0">,</span>
+                <span class="s1">downloadImageUrl.toString()</span><span class="s0">,</span>
+                <span class="s1">grow</span><span class="s0">, </span><span class="s1">water</span>
+            <span class="s1">)</span>
+            <span class="s2">// LOG TEST</span>
+            <span class="s1">Log.d(</span><span class="s3">&quot;lol&quot;</span><span class="s0">, </span><span class="s3">&quot;sendForm: name&quot; </span><span class="s1">+ plantName)</span>
+            <span class="s1">Log.d(</span><span class="s3">&quot;lol&quot;</span><span class="s0">, </span><span class="s3">&quot;sendForm: name&quot; </span><span class="s1">+ grow)</span>
+
+            <span class="s2">// envoyer en BDD</span>
+            <span class="s1">repo.insertPlant(plant)</span>
+
+
+        <span class="s1">}</span>
+
+    <span class="s1">}</span>
+
+
+
+    <span class="s1">private </span><span class="s0">fun </span><span class="s1">pickupImage() {</span>
+        <span class="s0">val </span><span class="s1">intent = Intent()</span>
+        <span class="s1">intent.type = </span><span class="s3">&quot;image/&quot;</span>
+        <span class="s1">intent.action = Intent.ACTION_GET_CONTENT</span>
+        <span class="s1">startActivityForResult(Intent.createChooser(intent</span><span class="s0">, </span><span class="s3">&quot;Select picture&quot;</span><span class="s1">)</span><span class="s0">, </span><span class="s4">47</span><span class="s1">)</span>
+    <span class="s1">}</span>
+
+    <span class="s1">override </span><span class="s0">fun </span><span class="s1">onActivityResult(requestCode: Int</span><span class="s0">, </span><span class="s1">resultCode: Int</span><span class="s0">, </span><span class="s1">data: Intent?) {</span>
+        <span class="s0">super</span><span class="s1">.onActivityResult(requestCode</span><span class="s0">, </span><span class="s1">resultCode</span><span class="s0">, </span><span class="s1">data)</span>
+        <span class="s0">if </span><span class="s1">(requestCode == </span><span class="s4">47 </span><span class="s1">&amp;&amp; resultCode == Activity.RESULT_OK) {</span>
+
+            <span class="s2">// verifier si les donnees sont nulles on return</span>
+            <span class="s0">if </span><span class="s1">(data == </span><span class="s0">null </span><span class="s1">|| data.data == </span><span class="s0">null</span><span class="s1">) </span><span class="s0">return</span>
+
+            <span class="s2">// si non nulles on récupère image</span>
+            <span class="s1">file = data.data</span>
+
+            <span class="s2">// mettre à jour apperçu image</span>
+            <span class="s1">uploadedImage?.setImageURI(file)</span>
+
+<span class="s2">//           //  heberger sur le bucket</span>
+<span class="s2">//            val repo = PlantRepository()</span>
+<span class="s2">//            repo.uploadImage(file!!)</span>
+
+
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+<span class="s1">}</span></pre>
+</body>
+</html>

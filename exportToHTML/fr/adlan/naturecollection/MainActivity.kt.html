@@ -1,0 +1,73 @@
+<html>
+<head>
+<title>MainActivity.kt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #808080;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+MainActivity.kt</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">fr.adlan.naturecollection</span>
+
+<span class="s1">import android.os.Bundle</span>
+<span class="s1">import android.widget.TextView</span>
+<span class="s1">import androidx.appcompat.app.AppCompatActivity</span>
+<span class="s1">import androidx.fragment.app.Fragment</span>
+<span class="s1">import com.google.android.material.bottomnavigation.BottomNavigationView</span>
+<span class="s1">import fr.adlan.naturecollection.fragments.AddPlantFragment</span>
+<span class="s1">import fr.adlan.naturecollection.fragments.CollectionFragment</span>
+<span class="s1">import fr.adlan.naturecollection.fragments.HomeFragment</span>
+
+<span class="s0">class </span><span class="s1">MainActivity : AppCompatActivity() {</span>
+    <span class="s1">override </span><span class="s0">fun </span><span class="s1">onCreate(savedInstanceState: Bundle?) {</span>
+        <span class="s0">super</span><span class="s1">.onCreate(savedInstanceState)</span>
+        <span class="s1">setContentView(R.layout.activity_main)</span>
+        <span class="s2">// au lancement de l'appli on charge home fragment par défaut</span>
+        <span class="s1">loadFragment(HomeFragment(</span><span class="s0">this</span><span class="s1">)</span><span class="s0">, </span><span class="s1">R.string.home_page_title)</span>
+    <span class="s2">// importer BottomNavigationView</span>
+        <span class="s0">val </span><span class="s1">navigationView = findViewById&lt;BottomNavigationView&gt;(R.id.navigation_view)</span>
+        <span class="s1">navigationView.setOnNavigationItemSelectedListener {</span>
+            <span class="s0">when </span><span class="s1">(it.itemId) {</span>
+                <span class="s1">R.id.home_page -&gt; {</span>
+                    <span class="s1">loadFragment(HomeFragment(</span><span class="s0">this</span><span class="s1">)</span><span class="s0">,</span><span class="s1">R.string.home_page_title)</span>
+                    <span class="s0">return</span><span class="s1">@setOnNavigationItemSelectedListener </span><span class="s0">true</span>
+                <span class="s1">}</span>
+                <span class="s1">R.id.collection_page -&gt; {</span>
+                    <span class="s1">loadFragment(CollectionFragment(</span><span class="s0">this</span><span class="s1">)</span><span class="s0">,</span><span class="s1">R.string.collection_page_title)</span>
+                    <span class="s0">return</span><span class="s1">@setOnNavigationItemSelectedListener </span><span class="s0">true</span>
+                <span class="s1">}</span>
+                <span class="s1">R.id.add_plant_page -&gt; {</span>
+                    <span class="s1">loadFragment(AddPlantFragment(</span><span class="s0">this</span><span class="s1">)</span><span class="s0">,</span><span class="s1">R.string.add_plant_page_title)</span>
+                    <span class="s0">return</span><span class="s1">@setOnNavigationItemSelectedListener </span><span class="s0">true</span>
+                <span class="s1">}</span>
+                <span class="s0">else </span><span class="s1">-&gt; </span><span class="s0">false</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s1">private </span><span class="s0">fun </span><span class="s1">loadFragment(fragment: Fragment</span><span class="s0">, </span><span class="s1">string: Int) {</span>
+        <span class="s2">// charger PlantRepository</span>
+        <span class="s0">val </span><span class="s1">repo = PlantRepository()</span>
+        <span class="s2">// actualiser le titre de la page</span>
+        <span class="s1">findViewById&lt;TextView&gt;(R.id.page_title).text = resources.getString(string)</span>
+
+        <span class="s2">// mettre à jour laliste de plants</span>
+        <span class="s1">repo.updateData {</span>
+
+            <span class="s2">// injecter le fragment dans notre boite (fragment container)</span>
+            <span class="s0">val </span><span class="s1">transaction = supportFragmentManager.beginTransaction()</span>
+            <span class="s1">transaction.replace(R.id.fragment_container</span><span class="s0">, </span><span class="s1">fragment)</span>
+            <span class="s1">transaction.addToBackStack(</span><span class="s0">null</span><span class="s1">)</span>
+            <span class="s1">transaction.commit()</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+<span class="s1">}</span></pre>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<html>
+<head>
+<title>PlantPopup.kt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #808080;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+PlantPopup.kt</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">fr.adlan.naturecollection</span>
+
+<span class="s1">import android.app.Dialog</span>
+<span class="s1">import android.net.Uri</span>
+<span class="s1">import android.os.Bundle</span>
+<span class="s1">import android.view.Window</span>
+<span class="s1">import android.widget.Button</span>
+<span class="s1">import android.widget.ImageView</span>
+<span class="s1">import android.widget.TextView</span>
+<span class="s1">import com.bumptech.glide.Glide</span>
+<span class="s1">import fr.adlan.naturecollection.adapter.PlantAdapter</span>
+
+<span class="s0">class </span><span class="s1">PlantPopup(</span>
+    <span class="s1">private </span><span class="s0">val </span><span class="s1">adapter: PlantAdapter</span><span class="s0">,</span>
+    <span class="s1">private </span><span class="s0">val </span><span class="s1">currentPlant: PlantModel</span>
+<span class="s1">) : Dialog(adapter.context) {</span>
+
+    <span class="s1">override </span><span class="s0">fun </span><span class="s1">onCreate(savedInstanceState: Bundle?) {</span>
+        <span class="s0">super</span><span class="s1">.onCreate(savedInstanceState)</span>
+        <span class="s1">requestWindowFeature(Window.FEATURE_NO_TITLE)</span>
+        <span class="s1">setContentView(R.layout.popup_plant_details)</span>
+        <span class="s1">setupComponents()</span>
+        <span class="s1">setupCloseButton()</span>
+        <span class="s1">setupDeleteButton()</span>
+        <span class="s1">setupStarButton()</span>
+    <span class="s1">}</span>
+    <span class="s1">private </span><span class="s0">fun </span><span class="s1">updateStar(button: ImageView) {</span>
+        <span class="s2">// recupérer btn</span>
+
+        <span class="s0">if </span><span class="s1">(currentPlant.liked) {</span>
+            <span class="s1">button.setImageResource(R.drawable.ic_star)</span>
+        <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+            <span class="s1">button.setImageResource(R.drawable.ic_unstar)</span>
+        <span class="s1">}}</span>
+
+    <span class="s1">private </span><span class="s0">fun </span><span class="s1">setupStarButton() {</span>
+        <span class="s2">// recupérer btn</span>
+        <span class="s0">val </span><span class="s1">starButton = findViewById&lt;ImageView&gt;(R.id.star_button)</span>
+        <span class="s1">updateStar(starButton)</span>
+        <span class="s2">// interaction</span>
+        <span class="s1">starButton.setOnClickListener {</span>
+            <span class="s1">currentPlant.liked = !currentPlant.liked</span>
+            <span class="s0">val </span><span class="s1">repo = PlantRepository()</span>
+            <span class="s1">repo.updatePlant(currentPlant)</span>
+            <span class="s1">updateStar(starButton)</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s1">private </span><span class="s0">fun </span><span class="s1">setupDeleteButton() {</span>
+        <span class="s1">findViewById&lt;ImageView&gt;(R.id.delete_button).setOnClickListener {</span>
+            <span class="s2">// supprimer la plante de la BDD</span>
+            <span class="s0">val </span><span class="s1">repo = PlantRepository()</span>
+            <span class="s1">repo.deletePlant(currentPlant)</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s1">private </span><span class="s0">fun </span><span class="s1">setupCloseButton() {</span>
+        <span class="s1">findViewById&lt;ImageView&gt;(R.id.close_button).setOnClickListener {</span>
+            <span class="s2">// fermer la fenêtre</span>
+            <span class="s1">dismiss()</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s1">private </span><span class="s0">fun </span><span class="s1">setupComponents() {</span>
+        <span class="s2">// actualiser image plante</span>
+        <span class="s0">val </span><span class="s1">plantImage = findViewById&lt;ImageView&gt;(R.id.image_item)</span>
+        <span class="s1">Glide.with(adapter.context).load(Uri.parse(currentPlant.imageUrl)).into(plantImage)</span>
+        <span class="s2">// actualiser nom plante</span>
+        <span class="s1">findViewById&lt;TextView&gt;(R.id.popup_plant_name).text = currentPlant.name</span>
+        <span class="s2">// actualiser description plante</span>
+        <span class="s1">findViewById&lt;TextView&gt;(R.id.popup_plant_descriptione_subtitle).text =</span>
+            <span class="s1">currentPlant.descriptor</span>
+        <span class="s2">// actualiser croissance plante</span>
+        <span class="s1">findViewById&lt;TextView&gt;(R.id.popup_plant_grow_subtitle).text = currentPlant.grow</span>
+        <span class="s2">// actualiser consommation eau plante</span>
+        <span class="s1">findViewById&lt;TextView&gt;(R.id.popup_plant_water_subtitle).text = currentPlant.water</span>
+    <span class="s1">}</span>
+<span class="s1">}</span></pre>
+</body>
+</html>

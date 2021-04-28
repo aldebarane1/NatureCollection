@@ -1,0 +1,132 @@
+<html>
+<head>
+<title>PlantRepository.kt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #808080;}
+.s3 { color: #6a8759;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+PlantRepository.kt</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">fr.adlan.naturecollection</span>
+
+<span class="s1">import android.net.Uri</span>
+<span class="s1">import android.util.Log</span>
+<span class="s1">import com.google.android.gms.tasks.Continuation</span>
+<span class="s1">import com.google.android.gms.tasks.Task</span>
+<span class="s1">import com.google.firebase.database.DataSnapshot</span>
+<span class="s1">import com.google.firebase.database.DatabaseError</span>
+<span class="s1">import com.google.firebase.database.FirebaseDatabase</span>
+<span class="s1">import com.google.firebase.database.ValueEventListener</span>
+<span class="s1">import com.google.firebase.storage.FirebaseStorage</span>
+<span class="s1">import com.google.firebase.storage.UploadTask</span>
+<span class="s1">import fr.adlan.naturecollection.PlantRepository.Singleton.databaseRef</span>
+<span class="s1">import fr.adlan.naturecollection.PlantRepository.Singleton.downloadUri</span>
+<span class="s1">import fr.adlan.naturecollection.PlantRepository.Singleton.plantList</span>
+<span class="s1">import fr.adlan.naturecollection.PlantRepository.Singleton.storageReference</span>
+<span class="s1">import java.util.*</span>
+
+
+<span class="s0">class </span><span class="s1">PlantRepository {</span>
+
+    <span class="s0">object </span><span class="s1">Singleton {</span>
+        <span class="s2">// donner le lien pour acceder au BUCKET</span>
+        <span class="s1">private </span><span class="s0">val </span><span class="s1">BUCKET_URL: String = </span><span class="s3">&quot;gs://nature-collection-58f21.appspot.com&quot;</span>
+
+        <span class="s2">// se connecter à espace de stockage Firebase</span>
+        <span class="s0">val </span><span class="s1">storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(BUCKET_URL)</span>
+
+        <span class="s2">// se connecter à la référence &quot;plants&quot;</span>
+        <span class="s0">val </span><span class="s1">databaseRef = FirebaseDatabase.getInstance().getReference(</span><span class="s3">&quot;plants&quot;</span><span class="s1">)</span>
+
+        <span class="s2">// creer une liste qui va contenir nos plantes</span>
+        <span class="s0">val </span><span class="s1">plantList = arrayListOf&lt;PlantModel&gt;()</span>
+
+        <span class="s2">// contenir le lien image courante</span>
+        <span class="s0">var </span><span class="s1">downloadUri: Uri? = </span><span class="s0">null</span>
+    <span class="s1">}</span>
+
+    <span class="s0">fun </span><span class="s1">updateData(callback: () -&gt; Unit) {</span>
+        <span class="s2">// absorber les données récupérer dans la DatabaseRef</span>
+        <span class="s2">// et les mettre --&gt; liste de plante</span>
+        <span class="s1">databaseRef.addValueEventListener(</span><span class="s0">object </span><span class="s1">: ValueEventListener {</span>
+            <span class="s1">override </span><span class="s0">fun </span><span class="s1">onCancelled(error: DatabaseError) {</span>
+            <span class="s1">}</span>
+
+            <span class="s1">override </span><span class="s0">fun </span><span class="s1">onDataChange(snapshot: DataSnapshot) {</span>
+                <span class="s2">// retirer les anciennes données avant la mise à jour (sinon doublon)</span>
+                <span class="s1">plantList.clear()</span>
+                <span class="s2">// récolter la liste</span>
+                <span class="s0">for </span><span class="s1">(ds </span><span class="s0">in </span><span class="s1">snapshot.children) {</span>
+                    <span class="s2">// construire un objet plante</span>
+                    <span class="s0">val </span><span class="s1">plant = ds.getValue(PlantModel::</span><span class="s0">class</span><span class="s1">.java)</span>
+                    <span class="s2">// vérifier si plante non null</span>
+                    <span class="s0">if </span><span class="s1">(plant != </span><span class="s0">null</span><span class="s1">) {</span>
+                        <span class="s2">// ajouter la plante a la liste</span>
+                        <span class="s1">plantList.add(plant)</span>
+                    <span class="s1">}</span>
+                <span class="s1">}</span>
+                <span class="s2">//actionner le callback</span>
+                <span class="s1">callback()</span>
+            <span class="s1">}</span>
+
+        <span class="s1">})</span>
+    <span class="s1">}</span>
+
+    <span class="s2">// creer fonction envoie fichiers sur storage</span>
+    <span class="s0">fun </span><span class="s1">uploadImage(file: Uri</span><span class="s0">, </span><span class="s1">callback: () -&gt; Unit) {</span>
+        <span class="s2">// verifier que fichier non null</span>
+        <span class="s0">if </span><span class="s1">(file != </span><span class="s0">null</span><span class="s1">) {</span>
+            <span class="s0">val </span><span class="s1">fileName = UUID.randomUUID().toString() + </span><span class="s3">&quot;.jpg&quot;</span>
+            <span class="s0">val </span><span class="s1">ref = storageReference.child(fileName)</span>
+            <span class="s0">val </span><span class="s1">uploadTask = ref.putFile(file)</span>
+
+                <span class="s1">Log.d(</span><span class="s3">&quot;lol&quot;</span><span class="s0">, </span><span class="s3">&quot;uploadImage: &quot; </span><span class="s1">+ fileName)</span>
+
+            <span class="s2">// demarrer tache d'envoi</span>
+            <span class="s1">uploadTask.continueWithTask(Continuation&lt;UploadTask.TaskSnapshot</span><span class="s0">, </span><span class="s1">Task&lt;Uri&gt;&gt; { task -&gt;</span>
+                <span class="s2">// verifier si probleme lors de l'envoie fichier</span>
+                <span class="s0">if </span><span class="s1">(!task.isSuccessful) {</span>
+                    <span class="s1">task.exception?.let { </span><span class="s0">throw </span><span class="s1">it }</span>
+                    <span class="s1">Log.d(</span><span class="s3">&quot;lol&quot;</span><span class="s0">, </span><span class="s3">&quot;uploadImage: verification erreur lors de l'envoie fichier&quot;</span><span class="s1">)</span>
+                <span class="s1">}</span>
+                <span class="s0">return</span><span class="s1">@Continuation ref.downloadUrl</span>
+
+            <span class="s1">}).addOnCompleteListener { task -&gt;</span>
+                <span class="s2">// verifier si tout a bien fonctionner</span>
+                <span class="s0">if </span><span class="s1">(!task.isSuccessful) {</span>
+                    <span class="s2">//recuperer image</span>
+                    <span class="s1">downloadUri = task.result</span>
+                    <span class="s1">Log.d(</span>
+                        <span class="s3">&quot;lol&quot;</span><span class="s0">,</span>
+                        <span class="s3">&quot;uploadImage: verification si tout est OK lors de l'envoie fichier&quot;</span>
+                    <span class="s1">)</span>
+                    <span class="s1">callback()</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s2">// mettre à jour l'objet plant dans la BDD</span>
+    <span class="s0">fun </span><span class="s1">updatePlant(plant: PlantModel) {</span>
+        <span class="s1">databaseRef.child(plant.id).setValue(plant)</span>
+    <span class="s1">}</span>
+
+    <span class="s2">// inserer une nouvelle plante en base de donnees</span>
+    <span class="s0">fun </span><span class="s1">insertPlant(plant: PlantModel) {</span>
+        <span class="s1">databaseRef.child(plant.id).setValue(plant)</span>
+    <span class="s1">}</span>
+
+    <span class="s2">// supprimer la plante de la BDD</span>
+    <span class="s0">fun </span><span class="s1">deletePlant(plant: PlantModel) = databaseRef.child(plant.id).removeValue()</span>
+
+<span class="s1">}</span></pre>
+</body>
+</html>

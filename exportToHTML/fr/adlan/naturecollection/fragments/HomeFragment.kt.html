@@ -1,0 +1,58 @@
+<html>
+<head>
+<title>HomeFragment.kt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #808080;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+HomeFragment.kt</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">fr.adlan.naturecollection.fragments</span>
+
+<span class="s1">import android.os.Bundle</span>
+<span class="s1">import android.view.LayoutInflater</span>
+<span class="s1">import android.view.View</span>
+<span class="s1">import android.view.ViewGroup</span>
+<span class="s1">import androidx.fragment.app.Fragment</span>
+<span class="s1">import androidx.recyclerview.widget.RecyclerView</span>
+<span class="s1">import fr.adlan.naturecollection.MainActivity</span>
+<span class="s1">import fr.adlan.naturecollection.PlantModel</span>
+<span class="s1">import fr.adlan.naturecollection.PlantRepository.Singleton.plantList</span>
+<span class="s1">import fr.adlan.naturecollection.R</span>
+<span class="s1">import fr.adlan.naturecollection.adapter.PlantAdapter</span>
+<span class="s1">import fr.adlan.naturecollection.adapter.PlantItemDecoration</span>
+
+<span class="s0">class </span><span class="s1">HomeFragment(</span>
+    <span class="s1">private </span><span class="s0">val </span><span class="s1">context: MainActivity</span>
+<span class="s1">) : Fragment() {</span>
+    <span class="s1">override </span><span class="s0">fun </span><span class="s1">onCreateView(</span>
+            <span class="s1">inflater: LayoutInflater</span><span class="s0">,</span>
+            <span class="s1">container: ViewGroup?</span><span class="s0">,</span>
+            <span class="s1">savedInstanceState: Bundle?</span>
+    <span class="s1">): View? {</span>
+        <span class="s0">val </span><span class="s1">view = inflater?.inflate(R.layout.fragment_home</span><span class="s0">, </span><span class="s1">container</span><span class="s0">, false</span><span class="s1">)</span>
+
+        <span class="s2">// récupérer le recyclerview</span>
+        <span class="s0">val </span><span class="s1">horizontalRecyclerView = view.findViewById&lt;RecyclerView&gt;(R.id.horizontal_recycler_view)</span>
+        <span class="s1">horizontalRecyclerView.adapter = PlantAdapter(context</span><span class="s0">, </span><span class="s1">plantList.filter { !it.liked }</span><span class="s0">,</span>
+             <span class="s1">R.layout.item_horizontal_plant</span>
+        <span class="s1">)</span>
+
+        <span class="s2">//récupérer le second recyclerview</span>
+        <span class="s0">val </span><span class="s1">verticalRecyclerView = view.findViewById&lt;RecyclerView&gt;(R.id.vertical_recycler_view)</span>
+        <span class="s1">verticalRecyclerView.adapter = PlantAdapter(context</span><span class="s0">, </span><span class="s1">plantList</span><span class="s0">,</span>
+            <span class="s1">R.layout.item_vertical_plant</span>
+        <span class="s1">)</span>
+        <span class="s1">verticalRecyclerView.addItemDecoration(PlantItemDecoration())</span>
+        <span class="s0">return </span><span class="s1">view</span>
+    <span class="s1">}</span>
+<span class="s1">}</span></pre>
+</body>
+</html>
