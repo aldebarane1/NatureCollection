@@ -14,7 +14,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@color/green"
-            android:padding="10dp"
+            android:padding="30dp"
             android:text="@string/add_plant_page_upload_button"
             android:textColor="@color/white"
             style="@style/TitleTextStyle"/>
@@ -51,6 +51,7 @@
         android:layout_height="80dp"
         android:layout_marginTop="@dimen/item_margin"
         android:entries="@array/add_plant_page_grow_spinner_input"
+        android:backgroundTint="@color/lightGray"
         android:paddingLeft="@dimen/default_margin" />
 
     <Spinner
@@ -66,7 +67,8 @@
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:layout_marginTop="5dp"
-        android:background="@color/darkGreen"
+        android:background="@color/lightGray"
+
         android:text="@string/add_plant_page_confirm_button"
         android:textSize="24dp"
         android:textColor="@color/white"/>

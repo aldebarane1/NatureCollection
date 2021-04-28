@@ -84,12 +84,16 @@ class PlantRepository {
 
             }).addOnCompleteListener { task ->
                 // verifier si tout a bien fonctionner
-                if (!task.isSuccessful) {
+                Log.d(
+                    "lol",
+                    "uploadImage: verification 1 si tout est OK lors de l'envoie fichier"
+                )
+                if (task.isSuccessful) {
                     //recuperer image
                     downloadUri = task.result
                     Log.d(
                         "lol",
-                        "uploadImage: verification si tout est OK lors de l'envoie fichier"
+                        "uploadImage: verification 2 si tout est OK lors de l'envoie fichier"
                     )
                     callback()
                 }
