@@ -13,7 +13,7 @@
             android:id="@+id/uppload_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/green"
+            android:background="@color/purple_500"
             android:padding="30dp"
             android:text="@string/add_plant_page_upload_button"
             android:textColor="@color/white"
