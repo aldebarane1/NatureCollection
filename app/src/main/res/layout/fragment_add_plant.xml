@@ -13,18 +13,18 @@
             android:id="@+id/uppload_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/green"
+            android:background="@color/black"
             android:padding="10dp"
             android:text="@string/add_plant_page_upload_button"
             android:textColor="@color/white"
-            style="@style/TitleTextStyle"/>
+            android:textSize="24dp"/>
 
         <ImageView
             android:id="@+id/preview_image"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
-            android:src="@drawable/trending2" />
+            android:src="@drawable/trending3" />
     </LinearLayout>
 
     <EditText
